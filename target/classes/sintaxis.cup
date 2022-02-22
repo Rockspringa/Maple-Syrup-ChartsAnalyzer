@@ -1,0 +1,162 @@
+package edu.mooncoder.mapleanalyzer.logic.syntax;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+
+import edu.mooncoder.mapleanalyzer.model.graficos.GraficoBarras;
+import edu.mooncoder.mapleanalyzer.model.graficos.GraficoPie;
+import edu.mooncoder.mapleanalyzer.logic.lexic.Lexer;
+import edu.mooncoder.mapleanalyzer.model.contracts.Tipo;
+import edu.mooncoder.mapleanalyzer.model.structures.TuplaBivalor;
+
+parser code {:
+  private List<Object> numbers;
+  private List<Object> strings;
+  private List<Object> tuplas;
+
+  public Parser(Lexer lexer) {
+    super(lexer);
+  }
+:}
+
+terminal ETIQUETAS, VALORES, BARRAS, TITULO, TOTAL, EXTRA, EJE_X, EJE_Y, UNIR, TIPO, PIE;
+terminal PORCENTAJE, CANTIDAD;
+terminal DEF, EJECUTAR;
+
+terminal SEPARADOR, ASIGNAR, COMA;
+terminal IZQ_PARENTESIS, DER_PARENTESIS, IZQ_CORCHETE, DER_CORCHETE, IZQ_LLAVE, DER_LLAVE;
+terminal MENOS, MAS, POR, DIV, NEGADO;
+
+terminal Double NUMBER;
+terminal String LITERAL;
+
+non terminal syntax;
+non terminal declaraciones, ejecuciones;
+
+non terminal GraficoPie atributes_pie;
+non terminal GraficoBarras atributes_barras;
+
+non terminal List<Object> array;
+non terminal grupo_exprs, grupo_strings, grupo_tuplas;
+
+non terminal TuplaBivalor tupla;
+non terminal Double expr;
+
+precedence left MAS, MENOS;
+precedence left POR, DIV;
+precedence left NEGADO;
+
+start with syntax;
+
+syntax ::= declaraciones ejecuciones
+           ;
+
+declaraciones ::= DEF BARRAS IZQ_LLAVE atributes_barras DER_LLAVE declaraciones
+                  |   DEF PIE IZQ_LLAVE atributes_pie DER_LLAVE declaraciones
+                  |   
+                  ;
+
+ejecuciones ::= ejecuciones EJECUTAR IZQ_PARENTESIS LITERAL DER_PARENTESIS SEPARADOR
+                |
+                ;
+
+atributes_barras ::= atributes_barras:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
+                     {: grafico.setTitulo(titulo); RESULT = grafico; :}
+                     |
+                     atributes_barras:grafico EJE_X ASIGNAR array:strs SEPARADOR
+                     {: grafico.setEjeX(strs); RESULT = grafico; :}
+                     |
+                     atributes_barras:grafico EJE_Y ASIGNAR array:nums SEPARADOR
+                     {: grafico.setEjeY(nums); RESULT = grafico; :}
+                     |
+                     atributes_barras:grafico UNIR ASIGNAR array:tupls SEPARADOR
+                     {: grafico.setUnir(tupls); RESULT = grafico; :}
+                     |   
+                     {: RESULT = new GraficoBarras(); :}
+                     ;
+
+atributes_pie ::= atributes_pie:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
+                  {: grafico.setTitulo(titulo); RESULT = grafico; :}
+                  |
+                  atributes_pie:grafico ETIQUETAS ASIGNAR array:strs SEPARADOR
+                  {: grafico.setEtiquetas(strs); RESULT = grafico; :}
+                  |
+                  atributes_pie:grafico TIPO ASIGNAR PORCENTAJE SEPARADOR
+                  {: grafico.setTipo(Tipo.PORCENTAJE); RESULT = grafico; :}
+                  |
+                  atributes_pie:grafico TIPO ASIGNAR CANTIDAD SEPARADOR
+                  {: grafico.setTipo(Tipo.CANTIDAD); RESULT = grafico; :}
+                  |
+                  atributes_pie:grafico EXTRA ASIGNAR LITERAL:extra SEPARADOR
+                  {: grafico.setExtra(extra); RESULT = grafico; :}
+                  |
+                  atributes_pie:grafico VALORES ASIGNAR array:nums SEPARADOR
+                  {: grafico.setValores(nums); RESULT = grafico; :}
+                  |
+                  atributes_pie:grafico TOTAL ASIGNAR expr:total SEPARADOR
+                  {: grafico.setTotal(total); RESULT = grafico; :}
+                  |
+                  atributes_pie:grafico UNIR ASIGNAR array:tupls SEPARADOR
+                  {: grafico.setUnir(tupls); RESULT = grafico; :}
+                  |   
+                  {: RESULT = new GraficoPie(); :}
+                  ;
+
+array ::= IZQ_CORCHETE grupo_exprs DER_CORCHETE
+          {: RESULT = numbers; numbers = null; :}
+          |
+          IZQ_CORCHETE grupo_tuplas DER_CORCHETE
+          {: RESULT = tuplas; tuplas = null; :}
+          |
+          IZQ_CORCHETE grupo_strings DER_CORCHETE
+          {: RESULT = strings; strings = null; :}
+          ;
+
+tupla ::= IZQ_LLAVE expr:key COMA expr:val DER_LLAVE
+          {: RESULT = new TuplaBivalor(key, val); :}
+          ;
+
+grupo_exprs ::= grupo_exprs COMA expr:num
+                {: numbers.add(num); :}
+                |
+                expr:num
+                {: numbers = new ArrayList<>(); numbers.add(num); :}
+                ;
+
+grupo_strings ::= grupo_strings COMA LITERAL:str
+                  {: strings.add(str); :}
+                  |
+                  LITERAL:str
+                  {: strings = new ArrayList<>(); strings.add(str); :}
+                  ;
+
+grupo_tuplas ::= grupo_tuplas COMA tupla:tupla
+                  {: tuplas.add(tupla); :}
+                 |
+                 tupla:tupla
+                 {: tuplas = new ArrayList<>(); tuplas.add(tupla); :}
+                 ;
+
+expr ::= expr:num1 MAS expr:num2
+         {: RESULT = num1 + num2; :}
+         |
+         expr:num1 MENOS expr:num2
+         {: RESULT = num1 - num2; :}
+         |
+         expr:num1 POR expr:num2
+         {: RESULT = num1 * num2; :}
+         |
+         expr:num1 DIV expr:num2
+         {: RESULT = num1 / num2; :}
+	       |
+         MENOS expr:num
+         {: RESULT = - num; :}
+         %prec NEGADO
+         |
+         IZQ_PARENTESIS expr:num DER_PARENTESIS
+         {: RESULT = num; :}
+         |
+         NUMBER:num
+         {: RESULT = num; :}
+	       ;

@@ -1,0 +1,28 @@
+#Aqui estoy definiendo un gráfico de barras
+def Barras {
+            	titulo: "Grafica 1";
+            	ejex:["item1", "item2"];
+            	ejey:[5, 9];
+            	unir:[{0,1}, {1,0}];
+		#Aqui termine
+}
+#Aqui estoy definiendo varios gráficos de Pie
+Def Pie{
+titulo: "Grafica 2";
+tipo: Cantidad;
+etiquetas: ["Compi1", "Compi2"];
+valores:[5, 10];
+total: 25;
+unir:[{0,1}, {1,0}];
+extra: "Resto";
+}
+Def Pie{
+titulo: "Grafica 3";
+tipo: Porcentaje;
+etiquetas: ["Compi1", "Compi2"];
+valores:[70, 120];
+unir:[{0,1}, {1,0}];
+extra: "Resto";
+}
+#Aqui ejecutar la gráfica 1 y puedo ejecutar más de una grafica
+Ejecutar ("Grafica 1");
