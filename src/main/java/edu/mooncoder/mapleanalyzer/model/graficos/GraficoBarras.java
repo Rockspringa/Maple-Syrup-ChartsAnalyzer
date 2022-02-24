@@ -3,6 +3,7 @@ package edu.mooncoder.mapleanalyzer.model.graficos;
 import java.util.List;
 
 import edu.mooncoder.mapleanalyzer.exceptions.ReassigningFinalVariable;
+import edu.mooncoder.mapleanalyzer.exceptions.RequiredAttributesNotFilledException;
 import edu.mooncoder.mapleanalyzer.model.contracts.Grafico;
 import edu.mooncoder.mapleanalyzer.model.structures.ParametrizeChanger;
 
@@ -36,4 +37,12 @@ public class GraficoBarras extends Grafico {
         }
     }
 
+    @Override
+    protected void block() throws RequiredAttributesNotFilledException {
+        if (ejeX == null) {
+            throw new RequiredAttributesNotFilledException("eje X");
+        } if (ejeY == null) {
+            throw new RequiredAttributesNotFilledException("eje Y");
+        }
+    }
 }

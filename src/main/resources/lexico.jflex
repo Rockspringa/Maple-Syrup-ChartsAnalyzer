@@ -97,5 +97,5 @@ Number = [0-9]+ ("." [0-9]+)?
   \\                             { string.append('\\'); }
 }
 
-[^]                              { throw new UnknownCharacterException(yytext()); }
+[^]                              { throw new UnknownCharacterException(yytext(), yyline + 1, yycolumn + 1); }
 

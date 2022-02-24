@@ -1,6 +1,16 @@
 C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\logic\syntax\Parser.java
-C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\Main.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\exceptions\ReassigningFinalVariable.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\exceptions\RequiredAttributesNotFilledException.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\model\structures\TuplaBivalor.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\model\wrappers\ErrorHolder.java
 C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\exceptions\UnknownCharacterException.java
 C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\controller\Interpretator.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\exceptions\UnknownChartException.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\model\contracts\Tipo.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\Main.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\model\graficos\GraficoBarras.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\model\structures\ParametrizeChanger.java
 C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\logic\lexic\Lexer.java
 C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\logic\syntax\Tokens.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\model\contracts\Grafico.java
+C:\Users\dylan\Desktop\Everything,+but+Nothing\Programacion+Eliminar\MapleAnalyzer\src\main\java\edu\mooncoder\mapleanalyzer\model\graficos\GraficoPie.java

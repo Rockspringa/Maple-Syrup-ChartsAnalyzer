@@ -3,25 +3,26 @@ package edu.mooncoder.mapleanalyzer.model.graficos;
 import java.util.List;
 
 import edu.mooncoder.mapleanalyzer.exceptions.ReassigningFinalVariable;
+import edu.mooncoder.mapleanalyzer.exceptions.RequiredAttributesNotFilledException;
 import edu.mooncoder.mapleanalyzer.model.contracts.Grafico;
 import edu.mooncoder.mapleanalyzer.model.contracts.Tipo;
 import edu.mooncoder.mapleanalyzer.model.structures.ParametrizeChanger;
 
 public class GraficoPie extends Grafico {
-    private Integer[] valores;
+    private Double[] valores;
     private String[] etiquetas;
-    private Integer total;
+    private Double total;
     private String extra;
     private Tipo tipo;
 
-    public Integer[] getValores() {
+    public Double[] getValores() {
         return valores;
     }
 
     public void setValores(List<Object> valores) throws ReassigningFinalVariable {
         if (this.valores == null) {
-            ParametrizeChanger<String> changer = new ParametrizeChanger<>(String.valueOf(5.2));
-            this.valores = changer.changeParameter(valores).toArray(new Integer[0]);
+            ParametrizeChanger<Double> changer = new ParametrizeChanger<>(Double.valueOf(5.2));
+            this.valores = changer.changeParameter(valores).toArray(new Double[0]);
         } else {
             throw new ReassigningFinalVariable("valores");
         }
@@ -59,20 +60,39 @@ public class GraficoPie extends Grafico {
     public void setTipo(Tipo tipo) throws ReassigningFinalVariable {
         if (this.tipo == null) {
             this.tipo = tipo;
+
+            if (this.tipo == Tipo.PORCENTAJE) {
+                this.setTotal(360.0);
+            } 
         } else {
             throw new ReassigningFinalVariable("tipo");
         }
     }
 
-    public Integer getTotal() {
+    public Double getTotal() {
         return total;
     }
 
-    public void setTotal(Integer total) throws ReassigningFinalVariable {
+    public void setTotal(Double total) throws ReassigningFinalVariable {
         if (this.total == null) {
             this.total = total;
         } else {
             throw new ReassigningFinalVariable("total");
+        }
+    }
+
+    @Override
+    protected void block() throws RequiredAttributesNotFilledException {
+        if (valores == null) {
+            throw new RequiredAttributesNotFilledException("valores");
+        } if (etiquetas == null) {
+            throw new RequiredAttributesNotFilledException("etiquetas");
+        } if (total == null) {
+            throw new RequiredAttributesNotFilledException("total");
+        } if (extra == null) {
+            throw new RequiredAttributesNotFilledException("extra");
+        } if (extra == null) {
+            throw new RequiredAttributesNotFilledException("extra");
         }
     }
 }

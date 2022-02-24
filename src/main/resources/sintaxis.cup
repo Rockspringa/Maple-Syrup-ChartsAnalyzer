@@ -2,21 +2,36 @@ package edu.mooncoder.mapleanalyzer.logic.syntax;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 
 import edu.mooncoder.mapleanalyzer.model.graficos.GraficoBarras;
 import edu.mooncoder.mapleanalyzer.model.graficos.GraficoPie;
+import edu.mooncoder.mapleanalyzer.model.contracts.Grafico;
 import edu.mooncoder.mapleanalyzer.logic.lexic.Lexer;
 import edu.mooncoder.mapleanalyzer.model.contracts.Tipo;
 import edu.mooncoder.mapleanalyzer.model.structures.TuplaBivalor;
+import edu.mooncoder.mapleanalyzer.model.wrappers.ErrorHolder;
 
 parser code {:
   private List<Object> numbers;
   private List<Object> strings;
   private List<Object> tuplas;
+  private List<ErrorHolder> errores = new ArrayList<>();
 
   public Parser(Lexer lexer) {
     super(lexer);
+  }
+
+  public void printErrores() {
+    errores.forEach(error -> System.out.println(error));
+  }
+
+  public ErrorHolder[] getErrores() {
+    return errores.toArray(new ErrorHolder[0]);
+  }
+
+  @Override
+  public void report_error(String message, Object info) {
+    super.report_error(message, info);
   }
 :}
 
@@ -52,111 +67,137 @@ start with syntax;
 syntax ::= declaraciones ejecuciones
            ;
 
-declaraciones ::= DEF BARRAS IZQ_LLAVE atributes_barras DER_LLAVE declaraciones
-                  |   DEF PIE IZQ_LLAVE atributes_pie DER_LLAVE declaraciones
-                  |   
+declaraciones ::= DEF BARRAS IZQ_LLAVE atributes_barras:grafico DER_LLAVE declaraciones
+                  {: if (errores.isEmpty()) grafico.addGrafico(); :}
+                  |
+                  DEF PIE IZQ_LLAVE atributes_pie:grafico DER_LLAVE declaraciones
+                  {: if (errores.isEmpty()) grafico.addGrafico(); :}
+                  |
+                  error:first atributes_pie:last
+                  {: errores.add(new ErrorHolder("conjunto de atributos apropiados",
+                        firstleft, firstright, lastleft, lastright)); :}
+                  |
                   ;
 
-ejecuciones ::= ejecuciones EJECUTAR IZQ_PARENTESIS LITERAL DER_PARENTESIS SEPARADOR
+ejecuciones ::= ejecuciones EJECUTAR IZQ_PARENTESIS LITERAL:titulo DER_PARENTESIS SEPARADOR
+                {: if (errores.isEmpty()) Grafico.ejecutar(titulo); :}
                 |
                 ;
 
 atributes_barras ::= atributes_barras:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
-                     {: grafico.setTitulo(titulo); RESULT = grafico; :}
+                     {: if (errores.isEmpty()) grafico.setTitulo(titulo); RESULT = grafico; :}
                      |
                      atributes_barras:grafico EJE_X ASIGNAR array:strs SEPARADOR
-                     {: grafico.setEjeX(strs); RESULT = grafico; :}
+                     {: if (errores.isEmpty()) grafico.setEjeX(strs); RESULT = grafico; :}
                      |
                      atributes_barras:grafico EJE_Y ASIGNAR array:nums SEPARADOR
-                     {: grafico.setEjeY(nums); RESULT = grafico; :}
+                     {: if (errores.isEmpty()) grafico.setEjeY(nums); RESULT = grafico; :}
                      |
                      atributes_barras:grafico UNIR ASIGNAR array:tupls SEPARADOR
-                     {: grafico.setUnir(tupls); RESULT = grafico; :}
+                     {: if (errores.isEmpty()) grafico.setUnir(tupls); RESULT = grafico; :}
                      |   
-                     {: RESULT = new GraficoBarras(); :}
+                     {: if (errores.isEmpty()) RESULT = new GraficoBarras(); :}
+                     |
+                     error SEPARADOR:error
+                     {: errores.add(new ErrorHolder("atributo de grafico de barras", errorleft, errorright)); :}
                      ;
 
 atributes_pie ::= atributes_pie:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
-                  {: grafico.setTitulo(titulo); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setTitulo(titulo); RESULT = grafico; :}
                   |
                   atributes_pie:grafico ETIQUETAS ASIGNAR array:strs SEPARADOR
-                  {: grafico.setEtiquetas(strs); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setEtiquetas(strs); RESULT = grafico; :}
                   |
                   atributes_pie:grafico TIPO ASIGNAR PORCENTAJE SEPARADOR
-                  {: grafico.setTipo(Tipo.PORCENTAJE); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setTipo(Tipo.PORCENTAJE); RESULT = grafico; :}
                   |
                   atributes_pie:grafico TIPO ASIGNAR CANTIDAD SEPARADOR
-                  {: grafico.setTipo(Tipo.CANTIDAD); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setTipo(Tipo.CANTIDAD); RESULT = grafico; :}
                   |
                   atributes_pie:grafico EXTRA ASIGNAR LITERAL:extra SEPARADOR
-                  {: grafico.setExtra(extra); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setExtra(extra); RESULT = grafico; :}
                   |
                   atributes_pie:grafico VALORES ASIGNAR array:nums SEPARADOR
-                  {: grafico.setValores(nums); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setValores(nums); RESULT = grafico; :}
                   |
                   atributes_pie:grafico TOTAL ASIGNAR expr:total SEPARADOR
-                  {: grafico.setTotal(total); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setTotal(total); RESULT = grafico; :}
                   |
                   atributes_pie:grafico UNIR ASIGNAR array:tupls SEPARADOR
-                  {: grafico.setUnir(tupls); RESULT = grafico; :}
+                  {: if (errores.isEmpty()) grafico.setUnir(tupls); RESULT = grafico; :}
                   |   
-                  {: RESULT = new GraficoPie(); :}
+                  {: if (errores.isEmpty()) RESULT = new GraficoPie(); :}
+                  |
+                  error:error IZQ_LLAVE
+                  {: errores.add(new ErrorHolder("atributo de grafico de pie", errorleft, errorright)); :}
                   ;
 
 array ::= IZQ_CORCHETE grupo_exprs DER_CORCHETE
-          {: RESULT = numbers; numbers = null; :}
+          {: if (errores.isEmpty()) RESULT = numbers; numbers = null; :}
           |
           IZQ_CORCHETE grupo_tuplas DER_CORCHETE
-          {: RESULT = tuplas; tuplas = null; :}
+          {: if (errores.isEmpty()) RESULT = tuplas; tuplas = null; :}
           |
           IZQ_CORCHETE grupo_strings DER_CORCHETE
-          {: RESULT = strings; strings = null; :}
+          {: if (errores.isEmpty()) RESULT = strings; strings = null; :}
+          |
+          IZQ_CORCHETE error:first DER_CORCHETE:last
+          {: errores.add(new ErrorHolder(firstleft, firstright, lastleft, lastright)); :}
           ;
 
 tupla ::= IZQ_LLAVE expr:key COMA expr:val DER_LLAVE
-          {: RESULT = new TuplaBivalor(key, val); :}
+          {: if (errores.isEmpty()) RESULT = new TuplaBivalor(key, val); :}
+          |
+          IZQ_LLAVE error DER_LLAVE:error
+          {: errores.add(new ErrorHolder("tupla de dos valores", errorleft, errorright)); :}
+          |
+          IZQ_LLAVE expr COMA expr error DER_LLAVE:error
+          {: errores.add(new ErrorHolder("tupla de solo dos valores", errorleft, errorright)); :}
           ;
 
 grupo_exprs ::= grupo_exprs COMA expr:num
-                {: numbers.add(num); :}
+                {: if (errores.isEmpty()) numbers.add(num); :}
                 |
                 expr:num
                 {: numbers = new ArrayList<>(); numbers.add(num); :}
                 ;
 
 grupo_strings ::= grupo_strings COMA LITERAL:str
-                  {: strings.add(str); :}
+                  {: if (errores.isEmpty()) strings.add(str); :}
                   |
                   LITERAL:str
                   {: strings = new ArrayList<>(); strings.add(str); :}
                   ;
 
 grupo_tuplas ::= grupo_tuplas COMA tupla:tupla
-                  {: tuplas.add(tupla); :}
+                 {: if (errores.isEmpty()) tuplas.add(tupla); :}
                  |
                  tupla:tupla
                  {: tuplas = new ArrayList<>(); tuplas.add(tupla); :}
                  ;
 
 expr ::= expr:num1 MAS expr:num2
-         {: RESULT = num1 + num2; :}
+         {: if (errores.isEmpty()) RESULT = num1 + num2; :}
          |
          expr:num1 MENOS expr:num2
-         {: RESULT = num1 - num2; :}
+         {: if (errores.isEmpty()) RESULT = num1 - num2; :}
          |
          expr:num1 POR expr:num2
-         {: RESULT = num1 * num2; :}
+         {: if (errores.isEmpty()) RESULT = num1 * num2; :}
          |
          expr:num1 DIV expr:num2
-         {: RESULT = num1 / num2; :}
+         {: if (errores.isEmpty()) RESULT = num1 / num2; :}
 	       |
          MENOS expr:num
-         {: RESULT = - num; :}
+         {: if (errores.isEmpty()) RESULT = - num; :}
          %prec NEGADO
          |
          IZQ_PARENTESIS expr:num DER_PARENTESIS
-         {: RESULT = num; :}
+         {: if (errores.isEmpty()) RESULT = num; :}
          |
          NUMBER:num
-         {: RESULT = num; :}
+         {: if (errores.isEmpty()) RESULT = num; :}
+         |
+         error LITERAL:error
+         {: errores.add(new ErrorHolder("numero", errorleft, errorright)); :}
 	       ;

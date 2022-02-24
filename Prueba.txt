@@ -1,10 +1,10 @@
 #Aqui estoy definiendo un gráfico de barras
 def Barras {
-            	titulo: "Grafica 1";
-            	ejex:["item1", "item2"];
-            	ejey:[5, 9];
-            	unir:[{0,1}, {1,0}];
-		#Aqui termine
+                titulo: "Grafica 1";
+                ejex:["item1", "item2"];
+                ejey:[5, 9];
+                unir:[{0,1}, {1,0}];
+    #Aqui termine
 }
 #Aqui estoy definiendo varios gráficos de Pie
 Def Pie{
@@ -26,3 +26,4 @@ extra: "Resto";
 }
 #Aqui ejecutar la gráfica 1 y puedo ejecutar más de una grafica
 Ejecutar ("Grafica 1");
+Ejecutar ("Grafica 2");
