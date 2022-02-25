@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_charts">Sin graficos</string>
+    <string name="app_name">Maple &amp; Syrup</string>
+    <string name="code_hint">Puede ingresar los comandos apropiados aquí</string>
+    <string name="chartify">Traducir codigo a graficas</string>
+    <string name="back">Atras</string>
+    <string name="code_btn">Codigo</string>
+    <string name="charts_btn">Graficas</string>
+    <string name="tab_content">Pestañas del editor de graficas</string>
+    <string name="error_image">Error image</string>
 </resources>

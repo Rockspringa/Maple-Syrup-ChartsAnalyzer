@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Syrup Charts</string>
+    <string name="app_name">Maple &amp; Syrup</string>
     <string name="code_hint">Puede ingresar los comandos apropiados aquí</string>
     <string name="chartify">Traducir codigo a graficas</string>
     <string name="back">Atras</string>
