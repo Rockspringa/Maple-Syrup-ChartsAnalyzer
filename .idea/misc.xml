@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/drawable/error_background.xml" value="0.2565" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/drawable/ic_baseline_exposure_plus_1_24.xml" value="0.164" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2565" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/activity_log.xml" value="0.21920289855072464" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/activity_main.xml" value="0.2006340579710145" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/activity_slide.xml" value="0.2006340579710145" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/bar_chart_resource.xml" value="0.13179347826086957" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/chart_resource.xml" value="0.20923913043478262" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/fragment_charts.xml" value="0.14805194805194805" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/fragment_code.xml" value="0.13179347826086957" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/fragment_error.xml" value="0.2296195652173913" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/no_charts_resource.xml" value="0.1421875" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/layout/pie_chart_resources.xml" value="0.1546875" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/mipmap-anydpi-v26/error.xml" value="0.164" />
+        <entry key="..\:/Users/dylan/Desktop/Everything,+but+Nothing/Programacion+Eliminar/SyrupCharts/app/src/main/res/mipmap-anydpi-v26/error_round.xml" value="0.164" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
 </project>

@@ -2,22 +2,18 @@ package edu.mooncoder.syrupcharts.design.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import edu.mooncoder.syrupcharts.R
-import edu.mooncoder.syrupcharts.design.fragments.ChartsFragment
-import edu.mooncoder.syrupcharts.design.fragments.CodeFragment
+import edu.mooncoder.syrupcharts.design.adapters.SlidePageAdapter
 
-const val NUM_PAGES = 3
+const val NUM_PAGES = 2
 
 class SlideActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
-    private var tabNames = arrayOf("Codigo", "Reporte", "Graficas")
+    private var tabNames = arrayOf("Graficas", "Reporte")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +28,6 @@ class SlideActivity : AppCompatActivity() {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> tabNames[0]
-                1 -> tabNames[1]
                 else -> tabNames[tabNames.size - 1]
             }
         }.attach()
@@ -43,15 +38,6 @@ class SlideActivity : AppCompatActivity() {
             super.onBackPressed()
         } else {
             viewPager.currentItem = viewPager.currentItem - 1
-        }
-    }
-
-    private inner class SlidePageAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
-        override fun getItemCount(): Int = NUM_PAGES
-
-        override fun createFragment(position: Int): Fragment = when (position) {
-            0 -> CodeFragment()
-            else -> ChartsFragment()
         }
     }
 }

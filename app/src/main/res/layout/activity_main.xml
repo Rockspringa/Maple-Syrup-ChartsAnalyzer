@@ -6,29 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".design.activities.MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" >
 
-    </androidx.recyclerview.widget.RecyclerView>
+    <EditText
+        android:id="@+id/code_input"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="@string/code_hint"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:textColorHint="#00838F" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_code_btn"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:clickable="true"
+        android:contentDescription="@string/chartify"
         android:onClick="openSliceActivity"
-        android:contentDescription="@string/add_code_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:layout_constraintHorizontal_bias="0.923"
+        app:layout_constraintStart_toStartOf="@+id/code_input"
+        app:layout_constraintTop_toTopOf="@+id/code_input"
+        app:layout_constraintVertical_bias="0.939"
+        app:srcCompat="@drawable/ic_baseline_addchart_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>
