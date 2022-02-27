@@ -4,9 +4,13 @@
 
 package edu.mooncoder.mapleanalyzer.logic.lexic;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import java_cup.runtime.Symbol;
 import edu.mooncoder.mapleanalyzer.exceptions.UnknownCharacterException;
 import edu.mooncoder.mapleanalyzer.logic.syntax.Tokens;
+import edu.mooncoder.mapleanalyzer.model.wrappers.ErrorHolder;
 
 
 // See https://github.com/jflex-de/jflex/issues/222
@@ -329,13 +333,17 @@ public class Lexer implements java_cup.runtime.Scanner {
   private boolean zzEOFDone;
 
   /* user code: */
-  StringBuffer string = new StringBuffer();
+  private StringBuffer string = new StringBuffer();
+  private List<ErrorHolder> errors = new ArrayList<>();
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline + 1, yycolumn + 1);
   }
   private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline + 1, yycolumn + 1, value);
+  }
+  public ErrorHolder[] getErrorHolderList() {
+    return errors.toArray(new ErrorHolder[0]);
   }
 
 
@@ -603,7 +611,7 @@ public class Lexer implements java_cup.runtime.Scanner {
    * @return the next token.
    * @exception java.io.IOException if any I/O-Error occurs.
    */
-  @Override  public java_cup.runtime.Symbol next_token() throws java.io.IOException, UnknownCharacterException {
+  @Override  public java_cup.runtime.Symbol next_token() throws java.io.IOException {
     int zzInput;
     int zzAction;
 
@@ -745,7 +753,9 @@ public class Lexer implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { throw new UnknownCharacterException(yytext(), yyline + 1, yycolumn + 1);
+            { errors.add(new ErrorHolder(
+        new UnknownCharacterException(yytext(), yyline + 1, yycolumn + 1).getMessage())
+      );
             }
             // fall through
           case 40: break;

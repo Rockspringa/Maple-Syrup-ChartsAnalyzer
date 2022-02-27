@@ -5,7 +5,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 
 public class ParametrizeChanger<T> {
-    private Class<T> example;
+    private final Class<T> example;
 
     public ParametrizeChanger(T example) {
         this.example = (Class<T>) example.getClass();

@@ -21,7 +21,7 @@ public class GraficoPie extends Grafico {
 
     public void setValores(List<Object> valores) throws ReassigningFinalVariable {
         if (this.valores == null) {
-            ParametrizeChanger<Double> changer = new ParametrizeChanger<>(Double.valueOf(5.2));
+            ParametrizeChanger<Double> changer = new ParametrizeChanger<>(5.2);
             this.valores = changer.changeParameter(valores).toArray(new Double[0]);
         } else {
             throw new ReassigningFinalVariable("valores");
@@ -34,7 +34,7 @@ public class GraficoPie extends Grafico {
 
     public void setEtiquetas(List<Object> etiquetas) throws ReassigningFinalVariable {
         if (this.etiquetas == null) {
-            ParametrizeChanger<String> changer = new ParametrizeChanger<>(String.valueOf(5.2));
+            ParametrizeChanger<String> changer = new ParametrizeChanger<>("5.2");
             this.etiquetas = changer.changeParameter(etiquetas).toArray(new String[0]);
         } else {
             throw new ReassigningFinalVariable("etiquetas");
@@ -91,7 +91,7 @@ public class GraficoPie extends Grafico {
             throw new RequiredAttributesNotFilledException("total");
         } if (extra == null) {
             throw new RequiredAttributesNotFilledException("extra");
-        } if (extra == null) {
+        } if (tipo == null) {
             throw new RequiredAttributesNotFilledException("extra");
         }
     }

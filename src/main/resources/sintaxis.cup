@@ -10,6 +10,7 @@ import edu.mooncoder.mapleanalyzer.logic.lexic.Lexer;
 import edu.mooncoder.mapleanalyzer.model.contracts.Tipo;
 import edu.mooncoder.mapleanalyzer.model.structures.TuplaBivalor;
 import edu.mooncoder.mapleanalyzer.model.wrappers.ErrorHolder;
+import edu.mooncoder.mapleanalyzer.model.wrappers.OcurrenciaMatematica;
 
 parser code {:
   private List<Object> numbers;
@@ -95,11 +96,13 @@ atributes_barras ::= atributes_barras:grafico TITULO ASIGNAR LITERAL:titulo SEPA
                      |
                      atributes_barras:grafico UNIR ASIGNAR array:tupls SEPARADOR
                      {: if (errores.isEmpty()) grafico.setUnir(tupls); RESULT = grafico; :}
-                     |   
-                     {: if (errores.isEmpty()) RESULT = new GraficoBarras(); :}
+                     |
+                     atributes_barras SEPARADOR
                      |
                      error SEPARADOR:error
                      {: errores.add(new ErrorHolder("atributo de grafico de barras", errorleft, errorright)); :}
+                     |   
+                     {: if (errores.isEmpty()) RESULT = new GraficoBarras(); :}
                      ;
 
 atributes_pie ::= atributes_pie:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
@@ -125,11 +128,13 @@ atributes_pie ::= atributes_pie:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
                   |
                   atributes_pie:grafico UNIR ASIGNAR array:tupls SEPARADOR
                   {: if (errores.isEmpty()) grafico.setUnir(tupls); RESULT = grafico; :}
-                  |   
-                  {: if (errores.isEmpty()) RESULT = new GraficoPie(); :}
+                  |
+                  atributes_pie SEPARADOR
                   |
                   error:error IZQ_LLAVE
                   {: errores.add(new ErrorHolder("atributo de grafico de pie", errorleft, errorright)); :}
+                  |   
+                  {: if (errores.isEmpty()) RESULT = new GraficoPie(); :}
                   ;
 
 array ::= IZQ_CORCHETE grupo_exprs DER_CORCHETE
@@ -176,17 +181,37 @@ grupo_tuplas ::= grupo_tuplas COMA tupla:tupla
                  {: tuplas = new ArrayList<>(); tuplas.add(tupla); :}
                  ;
 
-expr ::= expr:num1 MAS expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 + num2; :}
+expr ::= expr:num1 MAS:mas expr:num2
+         {:
+          if (errores.isEmpty()) {
+            RESULT = num1 + num2;
+            new OcurrenciaMatematica("", "+", masleft, masright);
+          }
+         :}
          |
-         expr:num1 MENOS expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 - num2; :}
+         expr:num1 MENOS:menos expr:num2
+         {:
+          if (errores.isEmpty()) {
+            RESULT = num1 - num2;
+            new OcurrenciaMatematica("", "-", menosleft, menosright);
+          }
+         :}
          |
-         expr:num1 POR expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 * num2; :}
+         expr:num1 POR:por expr:num2
+         {:
+          if (errores.isEmpty()) {
+            RESULT = num1 * num2;
+            new OcurrenciaMatematica("", "*", porleft, porright);
+          }
+        :}
          |
-         expr:num1 DIV expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 / num2; :}
+         expr:num1 DIV:div expr:num2
+         {:
+          if (errores.isEmpty()) {
+            RESULT = num1 / num2;
+            new OcurrenciaMatematica("", "/", divleft, divright);
+          }
+         :}
 	       |
          MENOS expr:num
          {: if (errores.isEmpty()) RESULT = - num; :}

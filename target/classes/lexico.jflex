@@ -1,8 +1,12 @@
 package edu.mooncoder.mapleanalyzer.logic.lexic;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import java_cup.runtime.Symbol;
 import edu.mooncoder.mapleanalyzer.exceptions.UnknownCharacterException;
 import edu.mooncoder.mapleanalyzer.logic.syntax.Tokens;
+import edu.mooncoder.mapleanalyzer.model.wrappers.ErrorHolder;
 
 %%
 
@@ -13,16 +17,19 @@ import edu.mooncoder.mapleanalyzer.logic.syntax.Tokens;
 %public
 %line
 %column
-%throws UnknownCharacterException
 
 %{
-  StringBuffer string = new StringBuffer();
+  private StringBuffer string = new StringBuffer();
+  private List<ErrorHolder> errors = new ArrayList<>();
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline + 1, yycolumn + 1);
   }
   private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline + 1, yycolumn + 1, value);
+  }
+  public ErrorHolder[] getErrorHolderList() {
+    return errors.toArray(new ErrorHolder[0]);
   }
 %}
 
@@ -97,5 +104,9 @@ Number = [0-9]+ ("." [0-9]+)?
   \\                             { string.append('\\'); }
 }
 
-[^]                              { throw new UnknownCharacterException(yytext(), yyline + 1, yycolumn + 1); }
+[^] {
+      errors.add(new ErrorHolder(
+        new UnknownCharacterException(yytext(), yyline + 1, yycolumn + 1).getMessage())
+      );
+    }
 
