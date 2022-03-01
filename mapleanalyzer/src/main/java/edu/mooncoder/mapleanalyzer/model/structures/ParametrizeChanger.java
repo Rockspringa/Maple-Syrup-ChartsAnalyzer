@@ -20,7 +20,7 @@ public class ParametrizeChanger<T> {
             if (this.example.isInstance(str))
                 aux.add((T) str);
             else
-                ErrorHolder.messageThrowed("Una lista solo puede ser de un tipo de valor.", 2);
+                ErrorHolder.messageThrowed("La lista no es de tipo " + example.getSimpleName(), 2);
         }
 
         return aux;
