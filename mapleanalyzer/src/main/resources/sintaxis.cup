@@ -62,9 +62,6 @@ precedence left NEGADO;
 start with syntax;
 
 syntax ::= declaraciones ejecuciones
-           |
-           declaraciones ejecuciones error:error declaraciones
-           {: ErrorHolder.messageThrowed("La seccion de definicion ya ha terminado.", 2, errorleft, errorright); :}
            ;
 
 declaraciones ::= DEF BARRAS IZQ_LLAVE atributes_barras:grafico DER_LLAVE declaraciones
@@ -84,7 +81,11 @@ ejecuciones ::= ejecuciones EJECUTAR IZQ_PARENTESIS LITERAL:titulo DER_PARENTESI
                 :}
                 |
                 ejecuciones EJECUTAR error:error
-                {: ErrorHolder.messageEsperabaUn("literal entre parentesis", 1, errorleft, errorright); :}
+                {:
+                  ErrorHolder.messageThrowed(
+                    "Solo se esperan instrucciones de la forma 'Ejecucion(\"<< titulo >>\");'", 1, errorleft, errorright
+                  );
+                :}
                 |
                 ejecuciones SEPARADOR
                 |
@@ -248,7 +249,7 @@ array ::= IZQ_CORCHETE grupo_exprs DER_CORCHETE
           IZQ_CORCHETE grupo_strings DER_CORCHETE
           {: if (isRight()) RESULT = strings; strings = null; :}
           |
-          IZQ_CORCHETE error:error DER_CORCHETE
+          COMA error:error
           {: ErrorHolder.messageEsperabaUna("lista de datos de un solo tipo", 1, errorleft, errorright); :}
           ;
 
@@ -315,11 +316,11 @@ expr ::= expr:num1 MAS:mas expr:num2
           }
          :}
 	     |
-         MENOS expr:num
+         MENOS:menos expr:num
          {:
           if (isRight()) {
             RESULT = - num;
-            new OcurrenciaMatematica("", "-", divleft, divright);
+            new OcurrenciaMatematica("", "-", menosleft, menosright);
           }
          :}
          %prec NEGADO

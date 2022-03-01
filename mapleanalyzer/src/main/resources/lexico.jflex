@@ -57,7 +57,7 @@ Number = [0-9]+ ("." [0-9]+)?
   "ejey"                            { return symbol(Tokens.EJE_Y); }
   "unir"                            { return symbol(Tokens.UNIR); }
   "tipo"                            { return symbol(Tokens.TIPO); }
-  "Def" | "def"                     { return symbol(Tokens.DEF); }
+  "Def " | "def "                     { return symbol(Tokens.DEF); }
   "Pie"                             { return symbol(Tokens.PIE); }
 
   "Cantidad"                        { return symbol(Tokens.CANTIDAD); }
@@ -102,5 +102,5 @@ Number = [0-9]+ ("." [0-9]+)?
   \\                             { string.append('\\'); }
 }
 
-[^] {Espacios} { ErrorHolder.messageThrowed(getErrorMessage(), 0, yyline + 1, yycolumn + 1); }
+[^] { ErrorHolder.messageThrowed(getErrorMessage(), 0, yyline + 1, yycolumn + 1); }
 
