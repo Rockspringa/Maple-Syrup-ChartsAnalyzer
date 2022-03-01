@@ -1,7 +1,12 @@
 # Maple&Syrup - Charts Analyzer
 
+Link to this repository [link](https://github.com/Rockspringa/Maple-Syrup-ChartsAnalyzer)
+
 It's a android app to proccess code in a defined language to show charts.
+
 In '\app\build\intermediates\apk\debug' is the apk builded with his metadata JSON
+
+___
 
 ## Maple Analyzer
 
