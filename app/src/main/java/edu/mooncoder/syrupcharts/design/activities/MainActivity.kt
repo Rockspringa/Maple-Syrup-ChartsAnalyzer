@@ -24,14 +24,12 @@ class MainActivity : AppCompatActivity() {
     fun openSliceActivity(view: View) {
         val chartifyCode = ChartifyCode(codeInput!!.text)
 
-        if (chartifyCode.charts is List<Grafico>) {
+        if (chartifyCode.charts is List<Grafico> && !chartifyCode.hasErrors()) {
             val intent = Intent(this, SlideActivity()::class.java)
             startActivity(intent)
         } else {
-            LogActivity.errors = chartifyCode.errors
             val intent = Intent(this, LogActivity()::class.java)
             startActivity(intent)
         }
-
     }
 }

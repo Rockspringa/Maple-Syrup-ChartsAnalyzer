@@ -17,7 +17,7 @@ public class GraficoBarras extends Grafico {
 
     public void setEjeX(List<Object> ejeX) throws ReassigningFinalVariable {
         if (this.ejeX == null) {
-            ParametrizeChanger<String> changer = new ParametrizeChanger<>(String.valueOf(5.2));
+            ParametrizeChanger<String> changer = new ParametrizeChanger<>("5.2");
             this.ejeX = changer.changeParameter(ejeX).toArray(new String[0]);
         } else {
             throw new ReassigningFinalVariable("eje x");
@@ -30,7 +30,7 @@ public class GraficoBarras extends Grafico {
 
     public void setEjeY(List<Object> ejeY) throws ReassigningFinalVariable {
         if (this.ejeY == null) {
-            ParametrizeChanger<Double> changer = new ParametrizeChanger<>(Double.valueOf(5.2));
+            ParametrizeChanger<Double> changer = new ParametrizeChanger<>(5.2);
             this.ejeY = changer.changeParameter(ejeY).toArray(new Double[0]);
         } else {
             throw new ReassigningFinalVariable("eje y");

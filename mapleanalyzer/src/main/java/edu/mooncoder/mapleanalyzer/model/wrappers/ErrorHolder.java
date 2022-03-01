@@ -1,29 +1,51 @@
 package edu.mooncoder.mapleanalyzer.model.wrappers;
 
+import edu.mooncoder.mapleanalyzer.model.tipos.FaseAnalisis;
+
 public class ErrorHolder {
-    private String msg;
+    private final String msg;
+    private final int line;
+    private final int col;
+    private final FaseAnalisis fase;
 
-    public ErrorHolder(String msg) {
+    private ErrorHolder(String msg, int fase, int line, int col) {
         this.msg = msg;
+        this.line = line;
+        this.col = col;
+        this.fase = FaseAnalisis.values()[fase];
+
+        Reporte.getReporte().addError(this);
     }
 
-    public ErrorHolder(int line1, int col1, int line2, int col2) {
-        msg = ("Se encontro un error entre la linea " + line1 + ", columna " + col1
-                + " y la linea " + line2 + ", columna " + col2);
+    public static void messageThrowed(String msg, int fase) {
+        new ErrorHolder(msg, fase, -1, -1);
     }
 
-    public ErrorHolder(String esperado, int line1, int col1, int line2, int col2) {
-        msg = ("Se esperaba un " + esperado + " entre la linea " + line1 + ", columna " + col1
-                + " y la linea " + line2 + ", columna " + col2);
+    public static void messageThrowed(String msg, int fase, int line, int col) {
+        new ErrorHolder(msg, fase, line, col);
     }
 
-    public ErrorHolder(String esperado, int line, int col) {
-        msg = ("Se esperaba un " + esperado + ", cerca de "
-                + "la fila: " + line + ", columna: " + col);
+    public static void messageEsperabaUn(String esperado, int fase, int line, int col) {
+        new ErrorHolder("Se esperaba un " + esperado, fase, line, col);
     }
 
-    @Override
-    public String toString() {
-        return msg;
+    public static void messageEsperabaUna(String esperado, int fase, int line, int col) {
+        new ErrorHolder("Se esperaba una " + esperado, fase, line, col);
+    }
+
+    public String getMessage() {
+        return this.msg;
+    }
+
+    public int getLine() {
+        return this.line;
+    }
+
+    public int getColumn() {
+        return this.col;
+    }
+
+    public FaseAnalisis getFase() {
+        return fase;
     }
 }

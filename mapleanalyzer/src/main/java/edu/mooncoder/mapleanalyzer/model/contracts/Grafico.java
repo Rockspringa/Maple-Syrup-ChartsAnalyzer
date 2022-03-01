@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import edu.mooncoder.mapleanalyzer.exceptions.NotIntegerException;
 import edu.mooncoder.mapleanalyzer.exceptions.ReassigningFinalVariable;
 import edu.mooncoder.mapleanalyzer.exceptions.RequiredAttributesNotFilledException;
 import edu.mooncoder.mapleanalyzer.exceptions.UnknownChartException;
 import edu.mooncoder.mapleanalyzer.model.structures.ParametrizeChanger;
 import edu.mooncoder.mapleanalyzer.model.structures.TuplaBivalor;
+import edu.mooncoder.mapleanalyzer.model.wrappers.Reporte;
 
 public abstract class Grafico {
     private static final Map<String, Grafico> graficos = new HashMap<>();
@@ -50,6 +52,8 @@ public abstract class Grafico {
         }
         block();
         graficos.put(this.titulo, this);
+
+        Reporte.getReporte().graficoDefinido(this);
     }
     
     public String getTitulo() {
@@ -67,7 +71,7 @@ public abstract class Grafico {
         return this.unir;
     }
 
-    public void setUnir(List<Object> unir) throws ReassigningFinalVariable {
+    public void setUnir(List<Object> unir) throws ReassigningFinalVariable, NotIntegerException {
         if (this.unir == null) {
             ParametrizeChanger<TuplaBivalor> changer = new ParametrizeChanger<>(new TuplaBivalor(0.0, 0.0));
             this.unir = changer.changeParameter(unir).toArray(new TuplaBivalor[0]);

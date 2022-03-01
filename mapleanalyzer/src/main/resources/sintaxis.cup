@@ -10,23 +10,20 @@ import edu.mooncoder.mapleanalyzer.logic.lexic.Lexer;
 import edu.mooncoder.mapleanalyzer.model.contracts.Tipo;
 import edu.mooncoder.mapleanalyzer.model.structures.TuplaBivalor;
 import edu.mooncoder.mapleanalyzer.model.wrappers.ErrorHolder;
+import edu.mooncoder.mapleanalyzer.model.wrappers.OcurrenciaMatematica;
+import edu.mooncoder.mapleanalyzer.model.wrappers.Reporte;
 
 parser code {:
   private List<Object> numbers;
   private List<Object> strings;
   private List<Object> tuplas;
-  private List<ErrorHolder> errores = new ArrayList<>();
 
   public Parser(Lexer lexer) {
     super(lexer);
   }
 
-  public void printErrores() {
-    errores.forEach(error -> System.out.println(error));
-  }
-
-  public ErrorHolder[] getErrores() {
-    return errores.toArray(new ErrorHolder[0]);
+  private boolean isRight() {
+    return Reporte.getReporte().getErrores().isEmpty();
   }
 
   @Override
@@ -65,139 +62,274 @@ precedence left NEGADO;
 start with syntax;
 
 syntax ::= declaraciones ejecuciones
+           |
+           declaraciones ejecuciones error:error declaraciones
+           {: ErrorHolder.messageThrowed("La seccion de definicion ya ha terminado.", 2, errorleft, errorright); :}
            ;
 
 declaraciones ::= DEF BARRAS IZQ_LLAVE atributes_barras:grafico DER_LLAVE declaraciones
-                  {: if (errores.isEmpty()) grafico.addGrafico(); :}
+                  {: if (isRight()) grafico.addGrafico(); :}
                   |
                   DEF PIE IZQ_LLAVE atributes_pie:grafico DER_LLAVE declaraciones
-                  {: if (errores.isEmpty()) grafico.addGrafico(); :}
-                  |
-                  error:first atributes_pie:last
-                  {: errores.add(new ErrorHolder("conjunto de atributos apropiados",
-                        firstleft, firstright, lastleft, lastright)); :}
+                  {: if (isRight()) grafico.addGrafico(); :}
                   |
                   ;
 
 ejecuciones ::= ejecuciones EJECUTAR IZQ_PARENTESIS LITERAL:titulo DER_PARENTESIS SEPARADOR
-                {: if (errores.isEmpty()) Grafico.ejecutar(titulo); :}
+                {:
+                if (isRight()) {
+                  try { Grafico.ejecutar(titulo); }
+                  catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, tituloleft, tituloright); }
+                }
+                :}
+                |
+                ejecuciones EJECUTAR error:error
+                {: ErrorHolder.messageEsperabaUn("literal entre parentesis", 1, errorleft, errorright); :}
+                |
+                ejecuciones SEPARADOR
                 |
                 ;
 
-atributes_barras ::= atributes_barras:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
-                     {: if (errores.isEmpty()) grafico.setTitulo(titulo); RESULT = grafico; :}
+atributes_barras ::= atributes_barras:grafico TITULO:attr ASIGNAR LITERAL:titulo SEPARADOR
+                     {:
+                     if (isRight()) {
+                       try { grafico.setTitulo(titulo); RESULT = grafico; }
+                       catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                     }
+                     :}
                      |
-                     atributes_barras:grafico EJE_X ASIGNAR array:strs SEPARADOR
-                     {: if (errores.isEmpty()) grafico.setEjeX(strs); RESULT = grafico; :}
+                     atributes_barras:grafico EJE_X:attr ASIGNAR array:strs SEPARADOR
+                     {:
+                     if (isRight()) {
+                       try { grafico.setEjeX(strs); RESULT = grafico; }
+                       catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                     }
+                     :}
                      |
-                     atributes_barras:grafico EJE_Y ASIGNAR array:nums SEPARADOR
-                     {: if (errores.isEmpty()) grafico.setEjeY(nums); RESULT = grafico; :}
+                     atributes_barras:grafico EJE_Y:attr ASIGNAR array:nums SEPARADOR
+                     {:
+                     if (isRight()) {
+                       try { grafico.setEjeY(nums); RESULT = grafico; }
+                       catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                     }
+                     :}
                      |
-                     atributes_barras:grafico UNIR ASIGNAR array:tupls SEPARADOR
-                     {: if (errores.isEmpty()) grafico.setUnir(tupls); RESULT = grafico; :}
-                     |   
-                     {: if (errores.isEmpty()) RESULT = new GraficoBarras(); :}
+                     atributes_barras:grafico UNIR:attr ASIGNAR array:tupls SEPARADOR
+                     {:
+                     if (isRight()) {
+                       try { grafico.setUnir(tupls); RESULT = grafico; }
+                       catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                     }
+                     :}
                      |
-                     error SEPARADOR:error
-                     {: errores.add(new ErrorHolder("atributo de grafico de barras", errorleft, errorright)); :}
+                     atributes_barras:grafico SEPARADOR
+                     {: RESULT = grafico; :}
+                     | /* errores */
+                     atributes_barras TITULO error:error
+                     {: ErrorHolder.messageEsperabaUna("asignacion de un literal", 1, errorleft, errorright); :}
+                     |
+                     atributes_barras EJE_X error:error
+                     {: ErrorHolder.messageEsperabaUna("asignacion de un lista de literales", 1, errorleft, errorright); :}
+                     |
+                     atributes_barras EJE_Y error:error
+                     {: ErrorHolder.messageEsperabaUna("asignacion de un lista de valores numericos", 1, errorleft, errorright); :}
+                     |
+                     atributes_barras UNIR error:error
+                     {: ErrorHolder.messageEsperabaUna("asignacion de un lista de tuplas", 1, errorleft, errorright); :}
+                     |
+                     atributes_barras error:error
+                     {: ErrorHolder.messageEsperabaUn("atributo para el grafico de barras", 1, errorleft, errorright); :}
+                     |
+                     /* lambda */
+                     {: if (isRight()) RESULT = new GraficoBarras(); :}
                      ;
 
-atributes_pie ::= atributes_pie:grafico TITULO ASIGNAR LITERAL:titulo SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setTitulo(titulo); RESULT = grafico; :}
+atributes_pie ::= atributes_pie:grafico TITULO:attr ASIGNAR LITERAL:titulo SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setTitulo(titulo); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  atributes_pie:grafico ETIQUETAS ASIGNAR array:strs SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setEtiquetas(strs); RESULT = grafico; :}
+                  atributes_pie:grafico ETIQUETAS:attr ASIGNAR array:strs SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setEtiquetas(strs); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  atributes_pie:grafico TIPO ASIGNAR PORCENTAJE SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setTipo(Tipo.PORCENTAJE); RESULT = grafico; :}
+                  atributes_pie:grafico TIPO:attr ASIGNAR PORCENTAJE SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setTipo(Tipo.PORCENTAJE); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  atributes_pie:grafico TIPO ASIGNAR CANTIDAD SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setTipo(Tipo.CANTIDAD); RESULT = grafico; :}
+                  atributes_pie:grafico TIPO:attr ASIGNAR CANTIDAD SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setTipo(Tipo.CANTIDAD); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  atributes_pie:grafico EXTRA ASIGNAR LITERAL:extra SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setExtra(extra); RESULT = grafico; :}
+                  atributes_pie:grafico EXTRA:attr ASIGNAR LITERAL:extra SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setExtra(extra); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  atributes_pie:grafico VALORES ASIGNAR array:nums SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setValores(nums); RESULT = grafico; :}
+                  atributes_pie:grafico VALORES:attr ASIGNAR array:nums SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setValores(nums); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  atributes_pie:grafico TOTAL ASIGNAR expr:total SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setTotal(total); RESULT = grafico; :}
+                  atributes_pie:grafico TOTAL:attr ASIGNAR expr:total SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setTotal(total); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  atributes_pie:grafico UNIR ASIGNAR array:tupls SEPARADOR
-                  {: if (errores.isEmpty()) grafico.setUnir(tupls); RESULT = grafico; :}
-                  |   
-                  {: if (errores.isEmpty()) RESULT = new GraficoPie(); :}
+                  atributes_pie:grafico UNIR:attr ASIGNAR array:tupls SEPARADOR
+                  {:
+                  if (isRight()) {
+                    try { grafico.setUnir(tupls); RESULT = grafico; }
+                    catch (Exception e) { ErrorHolder.messageThrowed(e.getMessage(), 2, attrleft, attrright); }
+                  }
+                  :}
                   |
-                  error:error IZQ_LLAVE
-                  {: errores.add(new ErrorHolder("atributo de grafico de pie", errorleft, errorright)); :}
+                  atributes_pie:grafico SEPARADOR
+                  {: RESULT = grafico; :}
+                  | /* errores */
+                  atributes_pie TITULO error:error
+                  {: ErrorHolder.messageEsperabaUna("asignacion de un literal", 1, errorleft, errorright); :}
+                  |
+                  atributes_pie ETIQUETAS error:error
+                  {: ErrorHolder.messageEsperabaUna("asignacion de una lista de literales", 1, errorleft, errorright); :}
+                  |
+                  atributes_pie TIPO error:error
+                  {: ErrorHolder.messageEsperabaUna("asignacion de un tipo", 1, errorleft, errorright); :}
+                  |
+                  atributes_pie EXTRA error:error
+                  {: ErrorHolder.messageEsperabaUna("asignacion de un literal", 1, errorleft, errorright); :}
+                  |
+                  atributes_pie VALORES error:error
+                  {: ErrorHolder.messageEsperabaUna("asignacion de una lista de valores numericos", 1, errorleft, errorright); :}
+                  |
+                  atributes_pie TOTAL error:error
+                  {: ErrorHolder.messageEsperabaUna("asignacion de un valor numerico", 1, errorleft, errorright); :}
+                  |
+                  atributes_pie UNIR error:error
+                  {: ErrorHolder.messageEsperabaUna("asignacion de una lista de tuplas", 1, errorleft, errorright); :}
+                  |
+                  atributes_pie error:error
+                  {: ErrorHolder.messageEsperabaUn("atributo para el grafico de pie", 1, errorleft, errorright); :}
+                  |
+                  /* lambda */
+                  {: if (isRight()) RESULT = new GraficoPie(); :}
                   ;
 
 array ::= IZQ_CORCHETE grupo_exprs DER_CORCHETE
-          {: if (errores.isEmpty()) RESULT = numbers; numbers = null; :}
+          {: if (isRight()) RESULT = numbers; numbers = null; :}
           |
           IZQ_CORCHETE grupo_tuplas DER_CORCHETE
-          {: if (errores.isEmpty()) RESULT = tuplas; tuplas = null; :}
+          {: if (isRight()) RESULT = tuplas; tuplas = null; :}
           |
           IZQ_CORCHETE grupo_strings DER_CORCHETE
-          {: if (errores.isEmpty()) RESULT = strings; strings = null; :}
+          {: if (isRight()) RESULT = strings; strings = null; :}
           |
-          IZQ_CORCHETE error:first DER_CORCHETE:last
-          {: errores.add(new ErrorHolder(firstleft, firstright, lastleft, lastright)); :}
+          IZQ_CORCHETE error:error DER_CORCHETE
+          {: ErrorHolder.messageEsperabaUna("lista de datos de un solo tipo", 1, errorleft, errorright); :}
           ;
 
-tupla ::= IZQ_LLAVE expr:key COMA expr:val DER_LLAVE
-          {: if (errores.isEmpty()) RESULT = new TuplaBivalor(key, val); :}
+tupla ::= IZQ_LLAVE expr:x COMA expr:y DER_LLAVE
+          {: if (isRight()) RESULT = new TuplaBivalor(x, y, xleft, xright, yleft, yright); :}
           |
           IZQ_LLAVE error DER_LLAVE:error
-          {: errores.add(new ErrorHolder("tupla de dos valores", errorleft, errorright)); :}
+          {: ErrorHolder.messageEsperabaUn("segundo valor numerico", 1, errorleft, errorright); :}
           |
-          IZQ_LLAVE expr COMA expr error DER_LLAVE:error
-          {: errores.add(new ErrorHolder("tupla de solo dos valores", errorleft, errorright)); :}
+          IZQ_LLAVE expr COMA expr COMA error:error DER_LLAVE
+          {: ErrorHolder.messageEsperabaUna("'}' (llave de cierre)'", 1, errorleft, errorright); :}
           ;
 
 grupo_exprs ::= grupo_exprs COMA expr:num
-                {: if (errores.isEmpty()) numbers.add(num); :}
+                {: if (isRight()) numbers.add(num); :}
                 |
                 expr:num
                 {: numbers = new ArrayList<>(); numbers.add(num); :}
                 ;
 
 grupo_strings ::= grupo_strings COMA LITERAL:str
-                  {: if (errores.isEmpty()) strings.add(str); :}
+                  {: if (isRight()) strings.add(str); :}
                   |
                   LITERAL:str
                   {: strings = new ArrayList<>(); strings.add(str); :}
                   ;
 
 grupo_tuplas ::= grupo_tuplas COMA tupla:tupla
-                 {: if (errores.isEmpty()) tuplas.add(tupla); :}
+                 {: if (isRight()) tuplas.add(tupla); :}
                  |
                  tupla:tupla
                  {: tuplas = new ArrayList<>(); tuplas.add(tupla); :}
                  ;
 
-expr ::= expr:num1 MAS expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 + num2; :}
+expr ::= expr:num1 MAS:mas expr:num2
+         {:
+          if (isRight()) {
+            RESULT = num1 + num2;
+            new OcurrenciaMatematica("", "+", masleft, masright);
+          }
+         :}
          |
-         expr:num1 MENOS expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 - num2; :}
+         expr:num1 MENOS:menos expr:num2
+         {:
+          if (isRight()) {
+            RESULT = num1 - num2;
+            new OcurrenciaMatematica("", "-", menosleft, menosright);
+          }
+         :}
          |
-         expr:num1 POR expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 * num2; :}
+         expr:num1 POR:por expr:num2
+         {:
+          if (isRight()) {
+            RESULT = num1 * num2;
+            new OcurrenciaMatematica("", "*", porleft, porright);
+          }
+         :}
          |
-         expr:num1 DIV expr:num2
-         {: if (errores.isEmpty()) RESULT = num1 / num2; :}
-	       |
+         expr:num1 DIV:div expr:num2
+         {:
+          if (isRight()) {
+            RESULT = num1 / num2;
+            new OcurrenciaMatematica("", "/", divleft, divright);
+          }
+         :}
+	     |
          MENOS expr:num
-         {: if (errores.isEmpty()) RESULT = - num; :}
+         {:
+          if (isRight()) {
+            RESULT = - num;
+            new OcurrenciaMatematica("", "-", divleft, divright);
+          }
+         :}
          %prec NEGADO
          |
          IZQ_PARENTESIS expr:num DER_PARENTESIS
-         {: if (errores.isEmpty()) RESULT = num; :}
+         {: if (isRight()) RESULT = num; :}
          |
          NUMBER:num
-         {: if (errores.isEmpty()) RESULT = num; :}
+         {: if (isRight()) RESULT = num; :}
          |
-         error LITERAL:error
-         {: errores.add(new ErrorHolder("numero", errorleft, errorright)); :}
-	       ;
+         expr error:error
+         {: ErrorHolder.messageEsperabaUn("numero", 1, errorleft, errorright); :}
+	     ;

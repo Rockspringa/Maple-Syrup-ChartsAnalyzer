@@ -1,41 +1,42 @@
 package edu.mooncoder.mapleanalyzer.controller;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.Map;
 
-import edu.mooncoder.mapleanalyzer.exceptions.UnknownCharacterException;
 import edu.mooncoder.mapleanalyzer.logic.lexic.Lexer;
 import edu.mooncoder.mapleanalyzer.logic.syntax.Parser;
+import edu.mooncoder.mapleanalyzer.logic.syntax.Tokens;
 import edu.mooncoder.mapleanalyzer.model.contracts.Grafico;
 import edu.mooncoder.mapleanalyzer.model.wrappers.ErrorHolder;
+import edu.mooncoder.mapleanalyzer.model.wrappers.Reporte;
 
 public class Interpretator {
-    private final Reader reader;
-    private final Lexer lexer;
-    private final Parser parser;
-    private ErrorHolder[] errors = new ErrorHolder[0];
 
     private LinkedList<Grafico> colaEjecucion;
     private Map<String, Grafico> graficos;
 
-    private boolean acceptable;
-
     public Interpretator(String code) {
         Grafico.clean();
+        Reporte.getReporte(true);
 
-        reader = new StringReader(code + "\n");
-        lexer = new Lexer(reader);
-        parser = new Parser(lexer);
+        Reader reader = new StringReader(code + "\n");
+        Lexer lexer = new Lexer(reader);
+        Parser parser = new Parser(lexer);
 
         try {
             parser.parse();
+
+            if (Reporte.getReporte().getErrores().size() != 0)
+                Grafico.clean();
+
             graficos = Grafico.getGraficos();
-            acceptable = true;
             colaEjecucion = (LinkedList<Grafico>) Grafico.getColaEjecucion();
         } catch (Exception e) {
-            errors = new ErrorHolder[] { new ErrorHolder(e.getMessage()) };
+            ErrorHolder.messageThrowed(e.getMessage(), 1);
+            Grafico.clean();
         }
     }
 
@@ -47,11 +48,7 @@ public class Interpretator {
         return colaEjecucion;
     }
 
-    public ErrorHolder[] getErrores() {
-        return (errors == null) ? parser.getErrores() : errors;
-    }
-
-    public boolean isAcceptable() {
-        return acceptable;
+    public boolean hasErrors() {
+        return !Reporte.getReporte().getErrores().isEmpty();
     }
 }

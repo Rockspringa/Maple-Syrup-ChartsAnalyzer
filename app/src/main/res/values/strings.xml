@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Maple &amp; Syrup</string>
+    <string name="app_name">Maple Syrup</string>
     <string name="code_hint">Puede ingresar los comandos apropiados aquí</string>
     <string name="chartify">Traducir codigo a graficas</string>
     <string name="back">Atras</string>
@@ -8,4 +8,15 @@
     <string name="tab_content">Pestañas del editor de graficas</string>
     <string name="error_image">Error image</string>
     <string name="no_charts">Sin graficos</string>
+    <string name="report_math">Reporte de ocurrencias de operadores matematicos</string>
+    <string name="report_graph">Reporte de gráficos definidos</string>
+    <string name="operador">Operador</string>
+    <string name="linea">Linea</string>
+    <string name="columna">Columna</string>
+    <string name="objeto">Objeto</string>
+    <string name="cant_definiciones">Cantidad de Definiciones</string>
+    <string name="barras">Barras</string>
+    <string name="pies">Pies</string>
+    <string name="tipo">Tipo</string>
+    <string name="descripcion">Descripcion</string>
 </resources>

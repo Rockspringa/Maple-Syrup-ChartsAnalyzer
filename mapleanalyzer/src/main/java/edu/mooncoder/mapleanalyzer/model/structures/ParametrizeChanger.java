@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
+import edu.mooncoder.mapleanalyzer.model.wrappers.ErrorHolder;
+
 public class ParametrizeChanger<T> {
-    private Class<T> example;
+    private final Class<T> example;
 
     public ParametrizeChanger(T example) {
         this.example = (Class<T>) example.getClass();
@@ -18,7 +20,7 @@ public class ParametrizeChanger<T> {
             if (this.example.isInstance(str))
                 aux.add((T) str);
             else
-                throw new InputMismatchException();
+                ErrorHolder.messageThrowed("Una lista solo puede ser de un tipo de valor.", 2);
         }
 
         return aux;
